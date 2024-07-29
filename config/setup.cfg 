@@ -1,0 +1,22 @@
+[metadata]
+name = example
+version = 0.0.1
+author = Your Name
+author_email = your.email@example.com
+description = An example project linking C++ and PyTorch using pybind11.
+long_description = file: README.md
+long_description_content_type = text/markdown
+url = https://github.com/yourusername/example
+project_urls =
+    Bug Tracker = https://github.com/yourusername/example/issues
+classifiers =
+    Programming Language :: Python :: 3
+    License :: OSI Approved :: MIT License
+    Operating System :: OS Independent
+
+[options]
+packages = find:
+python_requires = >=3.6
+
+[build_ext]
+inplace = 1

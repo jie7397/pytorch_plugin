@@ -1,0 +1,6 @@
+*.egg-info
+build/*
+dist/*
+torch_plugin/__pycache__/
+*pyc
+.vscode/
