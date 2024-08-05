@@ -18,7 +18,7 @@ at::Tensor add_tensors(const at::Tensor & tensor1, const at::Tensor & tensor2) {
 }
 
 at::Tensor sub_tensors(const at::Tensor & tensor1, const at::Tensor & tensor2) {
-    return const_cast<at::Tensor&>(tensor1);
+    return tensor1 - tensor2;
 }
 
 REGISTER_XTRANS_OP(sub_tensors, sub_tensors);
