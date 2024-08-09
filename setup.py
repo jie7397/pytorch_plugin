@@ -5,6 +5,7 @@ import sys
 import platform
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
+from shutil import copyfile, copytree, copy2, ignore_patterns
 from setuptools import find_packages
 
 class CMakeExtension(Extension):
@@ -38,6 +39,49 @@ class CMakeBuild(build_ext):
         subprocess.check_call(['cmake', ext.sourcedir] + cmake_args, cwd=self.build_temp)
         subprocess.check_call(['cmake', '--build', '.'] + build_args, cwd=self.build_temp)
 
+        self.copy_extensions_to_source()
+
+
+    def copy_extensions_to_source(self):
+        build_temp = os.path.abspath(self.build_temp)
+        ext_build_dir = os.path.abspath(self.build_lib)
+        os.makedirs(ext_build_dir, exist_ok=True)
+
+        # Copy torch_plugin_C.so
+        src_file = os.path.join(build_temp, 'torch_plugin', 'torch_plugin_C.so')
+        dst_file = os.path.join(ext_build_dir, 'torch_plugin', 'torch_plugin_C.so')
+
+        if not os.path.isfile(src_file):
+            raise RuntimeError(f"Expected shared library not found: {src_file}")
+
+        # Create destination directory if it does not exist
+        dst_dir = os.path.dirname(dst_file)
+        os.makedirs(dst_dir, exist_ok=True)
+        
+        # Copy the shared library file
+        copy2(src_file, dst_file)
+
+        # Copy all files from build_temp/torch_plugin/lib to ext_output_dir/torch_plugin/lib
+        src_lib_dir = os.path.join(build_temp, 'torch_plugin', 'lib')
+        dst_lib_dir = os.path.join(ext_build_dir, 'torch_plugin', 'lib')
+
+        if not os.path.exists(src_lib_dir):
+            raise RuntimeError(f"Expected source directory not found: {src_lib_dir}")
+
+        # Create destination directory if it does not exist
+        os.makedirs(dst_lib_dir, exist_ok=True)
+        
+        # Copy all files from src_lib_dir to dst_lib_dir
+        for root, _, files in os.walk(src_lib_dir):
+            for file in files:
+                src_file = os.path.join(root, file)
+                rel_path = os.path.relpath(src_file, src_lib_dir)
+                dst_file = os.path.join(dst_lib_dir, rel_path)
+                dst_file_dir = os.path.dirname(dst_file)
+                os.makedirs(dst_file_dir, exist_ok=True)
+                copy2(src_file, dst_file)
+
+
 setup(
     name='torch_plugin',
     version='0.0.1',
@@ -48,7 +92,10 @@ setup(
     long_description_content_type='text/markdown',
     url='https://github.com/jie7397/pytorch_plugin',
     packages=find_packages(),
-    ext_modules=[CMakeExtension('torch_plugin_C')],
+    package_data={
+        'torch_plugin': ['torch_plugin_C.so', 'lib/*'],
+    },
+    ext_modules=[CMakeExtension('torch_plugin/torch_plugin_C')],
     cmdclass={'build_ext': CMakeBuild},
     zip_safe=False,
     install_requires=[

@@ -62,12 +62,12 @@ private:
     std::unordered_map<std::string, func_wrapper_ptr> functionMap;
 };
 
-#define REGISTER_XTRANS_OP(name, func) \
+#define REGISTER_TORCH_OP(name, func) \
     static bool _registered_##name = [](){ \
         RegisterTorchOp::getInstance().Register(#name, \
         std::make_unique<FunctionWrapper<std::function<decltype(func)>>>(func)); \
         return true; \
     }();
 
-#define GET_XTRANS_OP(name, FuncType) \
+#define GET_TORCH_OP(name, FuncType) \
     RegisterTorchOp::getInstance().get<std::function<FuncType>>(name)

@@ -36,8 +36,10 @@ execute_process(
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
-# for trans register
-include_directories(xtrans_demo)
+# for op register demo
+include_directories(op_register)
+add_subdirectory(op_register)
+
 
 list(APPEND CMAKE_PREFIX_PATH ${PybindOutput})
 
@@ -47,15 +49,14 @@ find_package(pybind11 REQUIRED)
 # Find Torch
 find_package(Torch REQUIRED)
 
-add_subdirectory(xtrans_demo)
+add_library(torch_plugin_C MODULE py_bind/bind.cc)
 
-add_library(torch_plugin_C MODULE bind.cc)
-
-
-target_link_libraries(torch_plugin_C PRIVATE xtrans_op pybind11::module ${TORCH_LIBRARIES})
+target_link_libraries(torch_plugin_C PRIVATE register_torch_op pybind11::module ${TORCH_LIBRARIES})
 set_target_properties(torch_plugin_C PROPERTIES PREFIX "")
-# set_target_properties(torch_plugin_C PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/torch_plugin)
 
-
-
-# set_target_properties(torch_plugin_C PROPERTIES PREFIX "${PYTHON_MODULE_PREFIX}" SUFFIX "${PYTHON_MODULE_EXTENSION}")
+set_target_properties(torch_plugin_C PROPERTIES 
+    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/torch_plugin
+    BUILD_RPATH "\$ORIGIN/../build:\$ORIGIN"
+    INSTALL_RPATH "\$ORIGIN/../build:\$ORIGIN"
+    INSTALL_RPATH_USE_LINK_PATH TRUE
+)
