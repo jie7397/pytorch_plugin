@@ -1,6 +1,7 @@
 *.egg-info
 build/*
 dist/*
-src/python/torch_plugin/
+src/python/torch_plugin/__pycache__
+src/python/torch_plugin/torch_plugin.egg-info
 *pyc
 .vscode/

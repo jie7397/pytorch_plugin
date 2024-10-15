@@ -9,7 +9,7 @@ bash scripts/build.sh
 ## deregister all torch aten op
 ```python
 import torch_plugin
-torch_plugin.torch_plugin_C.deregister_all_op()
+torch_plugin._C.deregister_all_op()
 ```
 
 ## log
