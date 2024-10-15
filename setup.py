@@ -91,7 +91,8 @@ setup(
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
     url='https://github.com/jie7397/pytorch_plugin',
-    packages=find_packages(),
+    package_dir={'': 'src/python'},  # 指定包的源目录是 'src/python'
+    packages=find_packages(where='src/python'),  # 从 'src/python' 目录中查找包
     package_data={
         'torch_plugin': ['torch_plugin_C.so', 'lib/*'],
     },

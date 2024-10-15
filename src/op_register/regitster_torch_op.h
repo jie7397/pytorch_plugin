@@ -1,10 +1,13 @@
-#include <iostream>
+#ifndef REGISTER_TORCH_OP_H
+#define REGISTER_TORCH_OP_H
+
 #include <memory>
 #include <unordered_map>
 #include <string>
 #include <functional>
 #include <stdexcept>
-#include <iostream>
+#include "log.h"
+
 
 #ifdef _WIN32
     #define EXPORT __declspec(dllexport)
@@ -71,3 +74,4 @@ private:
 
 #define GET_TORCH_OP(name, FuncType) \
     RegisterTorchOp::getInstance().get<std::function<FuncType>>(name)
+#endif
