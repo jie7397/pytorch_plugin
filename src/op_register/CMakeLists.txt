@@ -8,7 +8,7 @@ file(GLOB REGISTER_TORCH_OP_SOURCES "./*.cpp")
 
 add_library(register_torch_op SHARED ${REGISTER_TORCH_OP_SOURCES} )
 
-target_include_directories(register_torch_op PRIVATE ${spdlog_SOURCE_DIR}/include)
+target_link_libraries(register_torch_op PRIVATE spdlog::spdlog_header_only)
 
 set_target_properties(register_torch_op PROPERTIES 
     LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/torch_plugin/lib

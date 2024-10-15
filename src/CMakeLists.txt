@@ -64,9 +64,7 @@ file(GLOB_RECURSE PLTHOOK_SRCS "./plt_hook/*.cpp")
 
 add_library(torch_plugin SHARED util/log.cpp ${OP_DEREGISTER_SRCS} ${PLTHOOK_SRCS})
 
-target_include_directories(torch_plugin PRIVATE ${spdlog_SOURCE_DIR}/include)
-
-target_link_libraries(torch_plugin PRIVATE ${TORCH_LIBRARIES} ${TORCH_PYTHON_LIBRARY})
+target_link_libraries(torch_plugin PRIVATE ${TORCH_LIBRARIES} ${TORCH_PYTHON_LIBRARY} spdlog::spdlog_header_only)
 
 set_target_properties(torch_plugin PROPERTIES 
     LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/torch_plugin/lib
@@ -76,9 +74,7 @@ set_target_properties(torch_plugin PROPERTIES
 
 add_library(torch_plugin_C MODULE py_bind/bind.cc)
 
-target_include_directories(torch_plugin_C PRIVATE ${spdlog_SOURCE_DIR}/include)
-
-target_link_libraries(torch_plugin_C PRIVATE register_torch_op torch_plugin pybind11::module ${TORCH_LIBRARIES} ${TORCH_PYTHON_LIBRARY})
+target_link_libraries(torch_plugin_C PRIVATE register_torch_op torch_plugin pybind11::module ${TORCH_LIBRARIES} ${TORCH_PYTHON_LIBRARY} spdlog::spdlog_header_only)
 set_target_properties(torch_plugin_C PROPERTIES PREFIX "")
 
 add_dependencies(torch_plugin_C torch_plugin)

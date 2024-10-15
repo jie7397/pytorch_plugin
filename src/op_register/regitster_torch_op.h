@@ -6,26 +6,28 @@
 #include <string>
 #include <functional>
 #include <stdexcept>
-#include "log.h"
-
+#include "spdlog/spdlog.h"
 
 #ifdef _WIN32
-    #define EXPORT __declspec(dllexport)
+#define EXPORT __declspec(dllexport)
 #else
-    #define EXPORT __attribute__((visibility("default")))
+#define EXPORT __attribute__((visibility("default")))
 #endif
 
-class EXPORT BaseFunctionWrapper {
+class EXPORT BaseFunctionWrapper
+{
 public:
     virtual ~BaseFunctionWrapper() = default;
 };
 
-template<typename FuncType>
-class EXPORT FunctionWrapper : public BaseFunctionWrapper {
+template <typename FuncType>
+class EXPORT FunctionWrapper : public BaseFunctionWrapper
+{
 public:
     explicit FunctionWrapper(FuncType func) : func_(func) {}
 
-    FuncType get_func() {
+    FuncType get_func()
+    {
         return func_;
     }
 
@@ -33,43 +35,46 @@ private:
     FuncType func_;
 };
 
-class EXPORT RegisterTorchOp {
+class EXPORT RegisterTorchOp
+{
 public:
     using func_wrapper_ptr = std::unique_ptr<BaseFunctionWrapper>;
 
-    void Register(const char* name, func_wrapper_ptr function);
+    void Register(const char *name, func_wrapper_ptr function);
 
-    template<typename FuncType>
-    FuncType get(const char* name) {
+    template <typename FuncType>
+    FuncType get(const char *name)
+    {
         auto it = functionMap.find(name);
-        
-        if (it != functionMap.end()) {
-            auto wrapper = dynamic_cast<FunctionWrapper<FuncType>*>(it->second.get());
-            if (wrapper) {
+
+        if (it != functionMap.end())
+        {
+            auto wrapper = dynamic_cast<FunctionWrapper<FuncType> *>(it->second.get());
+            if (wrapper)
+            {
                 return wrapper->get_func();
             }
         }
-            return nullptr;
-
+        return nullptr;
     }
 
-    static RegisterTorchOp& getInstance();
+    static RegisterTorchOp &getInstance();
 
 private:
     RegisterTorchOp() = default;
     ~RegisterTorchOp() = default;
 
-    RegisterTorchOp(const RegisterTorchOp&) = delete;
-    RegisterTorchOp& operator=(const RegisterTorchOp&) = delete;
+    RegisterTorchOp(const RegisterTorchOp &) = delete;
+    RegisterTorchOp &operator=(const RegisterTorchOp &) = delete;
 
     std::unordered_map<std::string, func_wrapper_ptr> functionMap;
 };
 
-#define REGISTER_TORCH_OP(name, func) \
-    static bool _registered_##name = [](){ \
-        RegisterTorchOp::getInstance().Register(#name, \
-        std::make_unique<FunctionWrapper<std::function<decltype(func)>>>(func)); \
-        return true; \
+#define REGISTER_TORCH_OP(name, func)                                                                                    \
+    static bool _registered_##name = []() {                                                                              \
+        RegisterTorchOp::getInstance().Register(#name,                                                                   \
+                                                std::make_unique<FunctionWrapper<std::function<decltype(func)>>>(func)); \
+        return true;                                                                                                     \
     }();
 
 #define GET_TORCH_OP(name, FuncType) \

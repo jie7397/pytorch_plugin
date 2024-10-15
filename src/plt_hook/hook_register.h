@@ -4,33 +4,33 @@
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
-#include "log.h"
+#include "spdlog/spdlog.h"
 
+namespace hook
+{
 
-namespace hook {
+    class RegisterHook
+    {
 
-class RegisterHook {
-    
     public:
-        static RegisterHook& getInstance();
+        static RegisterHook &getInstance();
 
-        void Register(std::string lib_name, std::string symbol_name, void* func);
+        void Register(std::string lib_name, std::string symbol_name, void *func);
         std::unordered_set<std::string> getHookSymol(std::string lib_name);
-        void* getFunc(std::string lib_name, std::string symbol_name);
+        void *getFunc(std::string lib_name, std::string symbol_name);
         bool matchHookLib(std::string lib_name);
 
     private:
         RegisterHook() = default;
         ~RegisterHook() = default;
 
-        RegisterHook(const RegisterHook&) = delete;
-        RegisterHook& operator=(const RegisterHook&) = delete;
+        RegisterHook(const RegisterHook &) = delete;
+        RegisterHook &operator=(const RegisterHook &) = delete;
 
-        std::unordered_map<std::string, std::unordered_map<std::string, void*>> hook_config;
+        std::unordered_map<std::string, std::unordered_map<std::string, void *>> hook_config;
+    };
 
-};
-
-void hook();
+    void hook();
 
 }
 
