@@ -62,7 +62,7 @@ file(GLOB_RECURSE OP_DEREGISTER_SRCS "./op_deregister/*.cpp")
 file(GLOB_RECURSE PLTHOOK_HEADERS  "./plt_hook/*.h")
 file(GLOB_RECURSE PLTHOOK_SRCS "./plt_hook/*.cpp")
 
-add_library(torch_plugin SHARED ${OP_DEREGISTER_SRCS} ${PLTHOOK_SRCS} util/log.cpp)
+add_library(torch_plugin SHARED util/log.cpp ${OP_DEREGISTER_SRCS} ${PLTHOOK_SRCS})
 
 target_include_directories(torch_plugin PRIVATE ${spdlog_SOURCE_DIR}/include)
 
