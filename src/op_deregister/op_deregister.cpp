@@ -45,7 +45,7 @@ namespace TorchPlugin
 
                 op_handle = const_cast<c10::OperatorHandle &>(op_handle.value());
                 deregister_op(op_handle->operatorDef_->op, c10::DispatchKey::CUDA, op_handle.value(), op);
-                SPDLOG_INFO("DEREGISTIER OP: {} success", ns, op.name);
+                SPDLOG_INFO("DEREGISTIER OP: {} success", op.name);
             }
         }
 

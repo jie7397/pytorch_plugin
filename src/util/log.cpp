@@ -4,7 +4,7 @@
 
 __attribute__((constructor))
 void init_logging() {
-    spdlog::set_pattern("[%H:%M:%S %z] [%^%L%$] [thread %t] %v");
+    spdlog::set_pattern("[%H:%M:%S] [%^%L%$] [thread %t] %v");
     spdlog::cfg::load_env_levels();
 }
 
