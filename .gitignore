@@ -5,3 +5,4 @@ src/python/torch_plugin/__pycache__
 src/python/torch_plugin/torch_plugin.egg-info
 *pyc
 .vscode/
+.pytest_cache/
