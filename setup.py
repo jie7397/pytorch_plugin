@@ -87,7 +87,7 @@ setup(
     version='0.0.1',
     author='jie.liu',
     author_email='lj057397@163.com',
-    description='An example project linking C++ and PyTorch using pybind11.',
+    description='An example project dynamic modify pytorch',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
     url='https://github.com/jie7397/pytorch_plugin',

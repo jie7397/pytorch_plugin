@@ -1,2 +1,0 @@
-include torch_plugin/torch_plugin_C.so
-recursive-include torch_plugin/lib *
