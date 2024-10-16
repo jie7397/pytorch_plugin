@@ -17,7 +17,7 @@ namespace TorchPlugin
         }
     }
 
-    bool deregister_all_op()
+    bool deregister_all_op(std::string ns, std::unordered_set<std::string> ignore_lsit = {})
     {
         auto get_namespace = [](std::string s)
         {
@@ -34,14 +34,18 @@ namespace TorchPlugin
 
         for (auto op : op_names)
         {
+            if (auto search = ignore_lsit.find(op.name); search != ignore_lsit.end()) {
+                SPDLOG_INFO("SKIP DEREGISTIER OP: {}", ns, op.name);
+                continue;
+            }
 
             auto op_handle = c10::Dispatcher::singleton().findOp(op);
-            if (op_handle->hasKernelForDispatchKey(c10::DispatchKey::CUDA) && get_namespace(op.name) == "aten")
+            if (op_handle->hasKernelForDispatchKey(c10::DispatchKey::CUDA) && get_namespace(op.name) == ns)
             {
 
                 op_handle = const_cast<c10::OperatorHandle &>(op_handle.value());
                 deregister_op(op_handle->operatorDef_->op, c10::DispatchKey::CUDA, op_handle.value(), op);
-                SPDLOG_INFO("deregister {} success", op.name);
+                SPDLOG_INFO("DEREGISTIER OP: {} success", ns, op.name);
             }
         }
 
@@ -51,15 +55,36 @@ namespace TorchPlugin
 
         for (auto op : op_names)
         {
-            auto op_handle = c10::Dispatcher::singleton().findOp(op);
-            if (op_handle->hasKernelForDispatchKey(c10::DispatchKey::CUDA) && get_namespace(op.name) == "aten")
+            if (auto search = ignore_lsit.find(op.name); search != ignore_lsit.end())
             {
-                SPDLOG_ERROR("OP : {} deregister fail !!!", op.name);
+                continue;
+            }
+    
+            auto op_handle = c10::Dispatcher::singleton().findOp(op);
+            if (op_handle->hasKernelForDispatchKey(c10::DispatchKey::CUDA) && get_namespace(op.name) == ns)
+            {
+                SPDLOG_ERROR("OP {} deregister Fail !!!", op.name);
                 res = false;
             }
         }
 
         return res;
+    }
+
+    void list_all_cuda_kernel()
+    {
+        auto op_names = c10::Dispatcher::singleton().getAllOpNames();
+
+        for (auto op : op_names)
+        {
+
+            auto op_handle = c10::Dispatcher::singleton().findOp(op);
+            if (op_handle->hasKernelForDispatchKey(c10::DispatchKey::CUDA))
+            {
+                SPDLOG_INFO("OP : {}, has CUDA kernel", op.name);
+            }
+        }
+
     }
 
 }

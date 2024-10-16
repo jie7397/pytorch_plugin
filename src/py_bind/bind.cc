@@ -54,6 +54,12 @@ PYBIND11_MODULE(torch_plugin_C, m)
 {
     m.def("add_tensors", &add_tensors, "A function that adds two tensors");
     // m.def("hook_torch", &hook_torch, "hook torch");
+
     m.def("hook", &hook::hook, "hook cuda func");
-    m.def("deregister_all_op", &TorchPlugin::deregister_all_op, "deregister cuda func");
+
+    m.def("deregister_all_op", &TorchPlugin::deregister_all_op,
+        py::arg("ns"), py::arg("ignore_list") = std::unordered_set<std::string>{},
+        "deregister cuda kernel");
+
+    m.def("list_all_cuda_kernel", &TorchPlugin::list_all_cuda_kernel, "list cuda kernel");
 }
